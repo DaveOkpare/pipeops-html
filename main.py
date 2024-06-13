@@ -1,13 +1,16 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, logger
 from fastapi.responses import PlainTextResponse
 
 from whatsapp.utils import verify_webhook
 
 app = FastAPI()
 
+logging = logger.logger
+
 
 @app.get("/")
 def health():
+    logging.info("Test Logger", exc_info=1)
     return {"message": "Health check"}
 
 
