@@ -1,3 +1,5 @@
+import hashlib
+import hmac
 import json
 import os
 from urllib.parse import parse_qs
@@ -29,6 +31,10 @@ def verify_webhook(request):
 async def handle_webhook(request):
     if request.method == "POST":
         body = await request.body()
+        signature = request.headers.get("X-Hub-Signature", "")
+
+        if not verify_signature(body, signature):
+            return "Invalid signature", 403
 
         data = json.loads(body)
 
@@ -50,3 +56,13 @@ async def handle_webhook(request):
         logging.info(f"{sender_id} {phone_number_id} {message}")
 
     return "OK"
+
+
+def verify_signature(request_body, signature):
+    if signature.startswith("sha1="):
+        sha1 = hmac.new(
+            APP_SECRET.encode("utf-8"), request_body, hashlib.sha1
+        ).hexdigest()
+        return sha1 == signature[5:]
+    else:
+        return False
