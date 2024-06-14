@@ -3,6 +3,7 @@ import hmac
 import json
 import os
 from urllib.parse import parse_qs
+import requests
 
 from dotenv import load_dotenv
 from fastapi import logger
@@ -11,6 +12,7 @@ load_dotenv()
 
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
 APP_SECRET = os.getenv("APP_SECRET")
+PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 
 logging = logger.logger
 
@@ -66,3 +68,40 @@ def verify_signature(request_body, signature):
         return sha1 == signature[5:]
     else:
         return False
+
+
+def handle_message(sender_id, recipient_id, message):
+    message_text = None
+    if message.get("text"):
+        message_text = message["text"]["body"]
+
+    response = message_text
+    send_message(recipient_id, sender_id, response)
+
+
+def send_message(phone_number_id, recipient_id, message):
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": recipient_id,
+        "type": "text",
+        "text": {
+            "preview_url": True,
+            "body": message,
+        },
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {PAGE_ACCESS_TOKEN}",
+    }
+
+    response = requests.post(
+        f"https://graph.facebook.com/v20.0/{phone_number_id}/messages",
+        json=payload,
+        headers=headers,
+    )
+    if response.status_code != 200:
+        return "Failed to send message:", response.status_code
+    else:
+        return "Message sent to", recipient_id
