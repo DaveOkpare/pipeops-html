@@ -6,7 +6,8 @@ from urllib.parse import parse_qs
 import requests
 
 from dotenv import load_dotenv
-from fastapi import logger
+from fastapi import Request
+import logging
 
 load_dotenv()
 
@@ -15,10 +16,11 @@ APP_SECRET = os.getenv("APP_SECRET")
 PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
 
-logging = logger.logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-def verify_webhook(request):
+def verify_webhook(request: Request) -> str:
     query_params = parse_qs(str(request.query_params))
     mode = query_params.get("hub.mode", None)
     token = query_params.get("hub.verify_token", None)
@@ -29,9 +31,10 @@ def verify_webhook(request):
             return challenge[0]
         else:
             return "Invalid verification token"
+    return "Missing mode or token"
 
 
-async def handle_webhook(request):
+async def handle_webhook(request: Request) -> str:
     if request.method == "POST":
         body = await request.body()
         signature = request.headers.get("X-Hub-Signature", "")
@@ -51,7 +54,7 @@ async def handle_webhook(request):
         if messaging_events[0].get("statuses"):
             return "OK"
 
-        # for event in messaging_events:
+        # Process the first messaging event
         recipient_id = messaging_events[0]["metadata"]["display_phone_number"]
         phone_number_id = messaging_events[0]["metadata"]["phone_number_id"]
         message = messaging_events[0]["messages"][0]
@@ -103,6 +106,8 @@ def send_message(phone_number_id, recipient_id, message):
         headers=headers,
     )
     if response.status_code != 200:
-        return "Failed to send message:", response.status_code
+        logging.error(f"Failed to send message: {response.status_code}")
+        return f"Failed to send message: {response.status_code}"
     else:
-        return "Message sent to", recipient_id
+        logging.info(f"Message sent to {recipient_id}")
+        return f"Message sent to {recipient_id}"
