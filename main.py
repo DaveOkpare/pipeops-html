@@ -20,4 +20,4 @@ def verification(request: Request):
 @app.post("/webhook")
 async def notification(request: Request):
     response = await handle_webhook(request)
-    return PlainTextResponse(response)
+    return PlainTextResponse(str(response))
