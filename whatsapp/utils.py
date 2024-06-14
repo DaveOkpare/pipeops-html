@@ -101,7 +101,7 @@ def send_message(phone_number_id, recipient_id, message):
     }
 
     response = requests.post(
-        f"https://graph.facebook.com/v20.0/{phone_number_id}/messages",
+        f"https://graph.facebook.com/v20.0/{PHONE_NUMBER_ID}/messages",
         json=payload,
         headers=headers,
     )
