@@ -59,7 +59,7 @@ async def handle_webhook(request: Request) -> str:
         phone_number_id = messaging_events[0]["metadata"]["phone_number_id"]
         message = messaging_events[0]["messages"][0]
         sender_id = message["from"]
-        handle_message(sender_id, PHONE_NUMBER_ID, message)
+        handle_message(sender_id, phone_number_id, message)
 
     return "OK"
 
