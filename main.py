@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse
 
-from whatsapp.utils import verify_webhook
+from whatsapp.utils import verify_webhook, handle_webhook
 
 app = FastAPI()
 
@@ -18,5 +18,6 @@ def verification(request: Request):
 
 
 @app.post("/webhook")
-def notification():
-    pass
+def notification(request: Request):
+    response = handle_webhook(request)
+    return PlainTextResponse(response)
