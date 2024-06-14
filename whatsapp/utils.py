@@ -101,11 +101,12 @@ def send_message(phone_number_id, recipient_id, message):
     }
 
     response = requests.post(
-        f"https://graph.facebook.com/v20.0/{PHONE_NUMBER_ID}/messages",
+        f"https://graph.facebook.com/v20.0/{phone_number_id}/messages",
         json=payload,
         headers=headers,
     )
     if response.status_code != 200:
+        logging.error(response.text)
         logging.error(f"Failed to send message: {response.status_code}")
         return f"Failed to send message: {response.status_code}"
     else:
