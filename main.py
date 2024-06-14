@@ -18,6 +18,6 @@ def verification(request: Request):
 
 
 @app.post("/webhook")
-def notification(request: Request):
-    response = handle_webhook(request)
+async def notification(request: Request):
+    response = await handle_webhook(request)
     return PlainTextResponse(response)
