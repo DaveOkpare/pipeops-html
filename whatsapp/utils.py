@@ -13,6 +13,7 @@ load_dotenv()
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
 APP_SECRET = os.getenv("APP_SECRET")
 PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
+PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
 
 logging = logger.logger
 
@@ -55,7 +56,7 @@ async def handle_webhook(request):
         phone_number_id = messaging_events[0]["metadata"]["phone_number_id"]
         message = messaging_events[0]["messages"][0]
         sender_id = message["from"]
-        handle_message(sender_id, phone_number_id, message)
+        handle_message(sender_id, PHONE_NUMBER_ID, message)
 
     return "OK"
 
