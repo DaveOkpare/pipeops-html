@@ -8,6 +8,7 @@ import requests
 from dotenv import load_dotenv
 from fastapi import Request
 import logging
+from langchain_core.messages import HumanMessage
 from agent import abot
 
 load_dotenv()
