@@ -8,6 +8,7 @@ import requests
 from dotenv import load_dotenv
 from fastapi import Request
 import logging
+from agent import abot
 
 load_dotenv()
 
@@ -79,8 +80,9 @@ def handle_message(sender_id, recipient_id, message):
     if message.get("text"):
         message_text = message["text"]["body"]
 
-    response = message_text
-    send_message(recipient_id, sender_id, response)
+    messages = [HumanMessage(content=message_text)]
+    result = abot.graph.invoke({"messages": messages})
+    send_message(recipient_id, sender_id, result)
 
 
 def send_message(phone_number_id, recipient_id, message):
