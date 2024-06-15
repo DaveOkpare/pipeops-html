@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse
 
-from whatsapp.utils import verify_webhook, handle_webhook
+from utils.whatsapp import verify_webhook, handle_webhook
 
 app = FastAPI()
 
