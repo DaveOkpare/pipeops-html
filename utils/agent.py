@@ -4,6 +4,8 @@ from typing import Annotated, TypedDict
 
 from dotenv import load_dotenv
 from langchain_core.messages import AnyMessage, SystemMessage, ToolMessage
+from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, END
 
 load_dotenv()
@@ -52,3 +54,17 @@ class Agent:
             )
         print("Back to the model!")
         return {"messages": results}
+
+
+prompt = """You are a smart research assistant. Use the search engine to look up information. \
+You are allowed to make multiple calls (either together or in sequence). \
+Only look up information when you are sure of what you want. \
+If you need to look up some information before asking a follow up question, you are allowed to do that!
+"""
+
+tool = TavilySearchResults(max_results=4)
+print(type(tool))
+print(tool.name)
+
+model = ChatOpenAI(model="gpt-3.5-turbo")
+abot = Agent(model, [tool], system=prompt)
